@@ -19,7 +19,7 @@ app.use(express.static("public"));
 
 
 // web storage
-mongoose.connect(`mongodb+srv://${process.env.USER}:${process.env.PASS}@cluster0-y70r4.mongodb.net/todolistDB`, { useUnifiedTopology: true, useNewUrlParser: true })
+mongoose.connect(`mongodb+srv://${process.env.USER}:${process.env.PASS}@cluster0-y70r4.mongodb.net/studentRecord`, { useUnifiedTopology: true, useNewUrlParser: true })
     .then(() => console.log( 'Database Connected' ))
     .catch(err => console.log( err ));
 
