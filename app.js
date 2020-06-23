@@ -14,94 +14,94 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(express.static("public"));
 
-//TODO
-mongoose.connect("mongodb://localhost:27017/wikiDB", {useNewUrlParser: true, useUnifiedTopology: true});
+//for local host
+//mongoose.connect("mongodb://localhost:27017/studentRecord", {useNewUrlParser: true, useUnifiedTopology: true});
 
-const articleSchema = new mongoose.Schema({
-    title: String,
-    content: String
+
+// web storage
+mongoose.connect(`mongodb+srv://${process.env.USER}:${process.env.PASS}@cluster0-y70r4.mongodb.net/todolistDB`, { useUnifiedTopology: true, useNewUrlParser: true })
+    .then(() => console.log( 'Database Connected' ))
+    .catch(err => console.log( err ));
+
+const recordSchema = new mongoose.Schema({
+    Name: String,
+    Age: String,
+    Std: String
 });
 
-const Article = mongoose.model("Article", articleSchema);
+const Record = mongoose.model("Record", recordSchema);
 
-// //GET ROUTE
-// app.get("/articles", );
+//chained route
 
-
-// // post request
-// app.post("/articles", );
-
-// // delete all of the document in collection article
-// app.delete("/articles", );
-
-//CHAINED Route
-
-//////////////////////////////REQUEST TARGETING ALL ARTICLES///////////////////
-
-app.route("/articles")
+app.route("/records")
     .get((req, res) => {
-        Article.find({}, (err, results) => {
+        Record.find({}, (err, results) => {
             if(err) throw err;
             res.send(results);
         });
     })
     .post((req, res) => {
-        const article = new Article({
-            title: req.body.title,
-            content: req.body.content
+        const student = new Record({
+            Name: req.query.Name,
+            Age: req.query.Age,
+            Std: req.query.Std
         });
         
-        article.save(err => {
+        student.save(err => {
             if(err) res.send(err);
-            res.send("Successfully added a new article.");
+            res.send("Successfully added a new record.");
         });
     })
     .delete((req, res) => {
-        Article.deleteMany({}, err => {
+        Record.deleteMany({}, err => {
             if(err) res.send(err);
-            res.send("succesfully deleted all articles");
+            res.send("succesfully deleted all record.");
         });
     });
 
 
-//////////////////////////////REQUEST TARGETING SPECIFIC ARTICLES///////////////////
+//////////////////////////////REQUEST TARGETING SPECIFIC Students///////////////////
 
-app.route("/articles/:articleTitle")
+app.route("/records/:Name")
     .get((req, res) => {
-        Article.findOne({title: req.params.articleTitle}, (err, result) => {
+        Record.findOne({Name: req.params.Name}, (err, result) => {
             if(err) res.send;
             else if(result) res.send(result);
             else res.send("Not Found");
         })
     })
     .put((req, res) => {
-        Article.update(
-            {title: req.params.articleTitle}, 
-            {title: req.body.title, content: req.body.content}, 
+        Record.update(
+            {Name: req.params.Name}, 
+            req.query, 
             {overwrite: true}, 
             (err, result) => {
                 if(err) res.send(err);
-                res.send("successful");
+                res.send("successfully overwritten");
         });
     })
     .patch((req, res) => {
-        Article.update(
-            {title: req.params.articleTitle}, 
-            {$set: req.body}, 
+        Record.update(
+            {Name: req.params.Name}, 
+            {$set: req.query}, 
             (err, result) => {
                 if(err) res.send(err);
-                res.send("successful");
+                res.send("successfully updated");
         });
     })
     .delete((req, res) => {
-        Article.deleteOne(
-            {title: req.params.articleTitle},
+        Record.deleteOne(
+            {Name: req.params.Name},
             (err) => {
                 if(err) console.log(err);
                 else console.log('successfully deleted');
             })
     });
 
-app.listen(3000, function() {
-  console.log("Server started on port 3000");
+let port = process.env.PORT;
+
+if(port == null || port == "") port = 3000;
+
+app.listen(port, function() {
+  console.log(`Server started on port ${port}`);
 });
