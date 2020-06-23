@@ -81,7 +81,7 @@ app.route("/records/:Name")
         });
     })
     .patch((req, res) => {
-        Record.update(
+        Record.updateOne(
             {Name: req.params.Name}, 
             {$set: req.query}, 
             (err, result) => {
